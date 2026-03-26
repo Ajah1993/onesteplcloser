@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Step Closer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111009;
+  --cream: #F7F0E6;
+  --warm: #EDE0CC;
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --taupe: #8B7355;
+  --white: #FDFAF5;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--cream); color:var(--ink); font-family:'Jost',sans-serif; font-weight:300; overflow-x:hidden; cursor:none; }
+
+.cursor { width:8px; height:8px; background:var(--gold); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:99999; transition:transform 0.15s ease; mix-blend-mode:multiply; }
+.cursor-ring { width:32px; height:32px; border:1px solid var(--gold); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:99998; transition:all 0.3s ease; opacity:0.5; }
+
+nav { position:fixed; top:0; left:0; right:0; z-index:1000; padding:20px 40px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(to bottom,rgba(17,16,9,0.9),transparent); transition:all 0.4s ease; }
+nav.scrolled { background:rgba(17,16,9,0.95); backdrop-filter:blur(20px); padding:14px 40px; border-bottom:1px solid rgba(201,168,76,0.15); }
+.nav-brand { font-family:'Cormorant',serif; font-style:italic; font-size:22px; color:var(--gold-light); text-decoration:none; }
+.nav-links { display:flex; gap:32px; list-style:none; }
+.nav-links a { color:rgba(247,240,230,0.6); text-decoration:none; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; transition:color 0.2s; }
+.nav-links a:hover { color:var(--gold-light); }
+
+.hero { height:100vh; position:relative; display:flex; align-items:flex-end; padding:0 40px 80px; overflow:hidden; }
+.hero-bg { position:absolute; inset:0; background:linear-gradient(135deg,#0d0b06 0%,#1a1208 30%,#3d2b1a 60%,#6b4c2a 85%,#C9A84C 100%); }
+.orb { position:absolute; border-radius:50%; filter:blur(100px); opacity:0.25; animation:orbFloat 12s ease-in-out infinite alternate; }
+.orb-1 { width:600px; height:600px; background:#C9A84C; top:-200px; right:-100px; }
+.orb-2 { width:400px; height:400px; background:#C9A89A; bottom:0; left:-100px; animation-delay:-4s; }
+.orb-3 { width:300px; height:300px; background:#8B7355; top:50%; left:40%; animation-delay:-8s; }
+@keyframes orbFloat { from{transform:translate(0,0) scale(1);} to{transform:translate(40px,30px) scale(1.1);} }
+.hero-lines { position:absolute; inset:0; background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px); background-size:60px 60px; }
+
+.hero-content { position:relative; z-index:2; max-width:700px; }
+.hero-eyebrow { display:inline-flex; align-items:center; gap:10px; margin-bottom:24px; opacity:0; animation:fadeUp 1s 0.2s ease forwards; }
+.hero-eyebrow span { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold-light); }
+.eyebrow-line { width:40px; height:1px; background:var(--gold); }
+.hero h1 { font-family:'Cormorant',serif; font-weight:300; font-size:clamp(56px,10vw,96px); line-height:0.95; color:var(--white); letter-spacing:-0.02em; opacity:0; animation:fadeUp 1s 0.4s ease forwards; }
+.hero h1 em { font-style:italic; color:var(--gold-light); display:block; }
+.hero-sub { margin-top:28px; font-family:'Cormorant',serif; font-size:18px; font-style:italic; color:rgba(247,240,230,0.55); line-height:1.65; max-width:420px; opacity:0; animation:fadeUp 1s 0.6s ease forwards; }
+.hero-actions { margin-top:44px; display:flex; align-items:center; gap:24px; opacity:0; animation:fadeUp 1s 0.8s ease forwards; }
+
+.btn-gold { background:var(--gold); color:var(--ink); padding:16px 36px; border:none; font-family:'Jost',sans-serif; font-size:11px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; text-decoration:none; display:inline-block; transition:all 0.3s ease; cursor:none; }
+.btn-gold:hover { background:var(--gold-light); transform:translateY(-2px); box-shadow:0 20px 60px rgba(201,168,76,0.3); }
+.btn-ghost { color:rgba(247,240,230,0.5); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; text-decoration:none; display:flex; align-items:center; gap:8px; transition:color 0.2s; cursor:none; }
+.btn-ghost:hover { color:var(--gold-light); }
+.btn-ghost::after { content:'→'; transition:transform 0.2s; }
+.btn-ghost:hover::after { transform:translateX(4px); }
+
+.hero-scroll { position:absolute; right:40px; bottom:80px; display:flex; flex-direction:column; align-items:center; gap:8px; opacity:0; animation:fadeIn 1s 1.2s ease forwards; }
+.scroll-text { font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:rgba(247,240,230,0.3); writing-mode:vertical-rl; }
+.scroll-bar { width:1px; height:60px; background:linear-gradient(to bottom,rgba(201,168,76,0.6),transparent); animation:scrollAnim 2s ease-in-out infinite; }
+@keyframes scrollAnim { 0%{transform:scaleY(0);transform-origin:top;} 50%{transform:scaleY(1);transform-origin:top;} 51%{transform:scaleY(1);transform-origin:bottom;} 100%{transform:scaleY(0);transform-origin:bottom;} }
+
+.marquee-strip { background:var(--ink); padding:14px 0; overflow:hidden; border-top:1px solid rgba(201,168,76,0.1); border-bottom:1px solid rgba(201,168,76,0.1); }
+.marquee-track { display:flex; gap:48px; animation:marquee 20s linear infinite; width:max-content; }
+.marquee-item { display:flex; align-items:center; gap:16px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(232,201,122,0.6); white-space:nowrap; }
+.marquee-item::before { content:'✦'; color:var(--gold); font-size:8px; }
+@keyframes marquee { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+.mood { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.mood-block { position:relative; overflow:hidden; aspect-ratio:4/5; }
+.mood-block img { width:100%; height:100%; object-fit:cover; transition:transform 0.8s ease; filter:saturate(0.8); }
+.mood-block:hover img { transform:scale(1.05); filter:saturate(1); }
+.mood-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(17,16,9,0.7) 0%,transparent 60%); }
+.mood-label { position:absolute; bottom:24px; left:24px; font-family:'Cormorant',serif; font-style:italic; font-size:20px; color:var(--white); }
+.mood-text { padding:60px 40px; display:flex; flex-direction:column; justify-content:center; background:var(--warm); }
+.mood-text .label { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--taupe); margin-bottom:20px; }
+.mood-text h2 { font-family:'Cormorant',serif; font-size:clamp(32px,5vw,52px); font-weight:300; line-height:1.2; margin-bottom:24px; }
+.mood-text p { font-family:'Cormorant',serif; font-size:17px; font-style:italic; color:var(--taupe); line-height:1.75; }
+
+.products { padding:80px 40px; background:var(--cream); }
+.products-header { text-align:center; margin-bottom:64px; }
+.products-header .label { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--taupe); display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:16px; }
+.products-header .label::before,.products-header .label::after { content:''; width:40px; height:1px; background:var(--warm); }
+.products-header h2 { font-family:'Cormorant',serif; font-size:clamp(36px,6vw,56px); font-weight:300; font-style:italic; }
+.products-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:900px; margin:0 auto; }
+.product-card { background:var(--white); overflow:hidden; transition:transform 0.4s ease,box-shadow 0.4s ease; }
+.product-card:hover { transform:translateY(-6px); box-shadow:0 30px 80px rgba(17,16,9,0.12); }
+.product-img { position:relative; aspect-ratio:3/4; overflow:hidden; }
+.product-cover-fallback { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:32px; text-align:center; }
+.cover-1 { background:linear-gradient(145deg,#2a1a0a,#8B6540,#C9A84C); }
+.cover-2 { background:linear-gradient(145deg,#0a1525,#1a3a5c,#2d6a8a); }
+.cover-text h3 { font-family:'Cormorant',serif; font-style:italic; font-size:28px; color:white; line-height:1.2; text-shadow:0 2px 20px rgba(0,0,0,0.4); }
+.cover-text p { font-family:'Jost',sans-serif; font-size:11px; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:8px; text-transform:uppercase; }
+.product-tag { position:absolute; top:16px; left:16px; background:rgba(17,16,9,0.7); backdrop-filter:blur(10px); color:var(--gold-light); font-size:9px; letter-spacing:0.18em; text-transform:uppercase; padding:6px 12px; border:1px solid rgba(201,168,76,0.2); }
+.product-body { padding:24px; }
+.product-body h3 { font-family:'Cormorant',serif; font-size:22px; font-weight:400; margin-bottom:8px; }
+.product-body .tagline { font-family:'Cormorant',serif; font-style:italic; font-size:15px; color:var(--taupe); margin-bottom:12px; line-height:1.5; }
+.product-body .desc { font-size:12px; color:#777; line-height:1.7; margin-bottom:20px; }
+.product-footer { display:flex; align-items:center; justify-content:space-between; padding-top:16px; border-top:1px solid var(--warm); }
+.product-price { font-family:'Cormorant',serif; font-size:24px; font-weight:600; color:var(--ink); }
+.product-price span { display:block; font-family:'Jost',sans-serif; font-size:10px; font-weight:300; color:var(--taupe); letter-spacing:0.1em; }
+.btn-buy { background:var(--ink); color:var(--white); padding:12px 22px; border:none; font-family:'Jost',sans-serif; font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; text-decoration:none; display:inline-block; transition:all 0.25s ease; cursor:none; }
+.btn-buy:hover { background:var(--taupe); }
+.btn-buy.gold-buy { background:var(--gold); color:var(--ink); }
+.btn-buy.gold-buy:hover { background:var(--gold-light); }
+
+.testimonials { background:var(--ink); padding:100px 40px; }
+.t-label { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:rgba(201,168,76,0.5); text-align:center; margin-bottom:60px; display:flex; align-items:center; justify-content:center; gap:16px; }
+.t-label::before,.t-label::after { content:''; width:40px; height:1px; background:rgba(201,168,76,0.2); }
+.testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; max-width:1000px; margin:0 auto; }
+.testimonial { background:rgba(247,240,230,0.03); padding:36px 28px; border:1px solid rgba(247,240,230,0.05); transition:background 0.3s ease; }
+.testimonial:hover { background:rgba(247,240,230,0.06); }
+.stars { color:var(--gold); font-size:11px; letter-spacing:3px; margin-bottom:16px; }
+.testimonial p { font-family:'Cormorant',serif; font-style:italic; font-size:17px; color:rgba(247,240,230,0.75); line-height:1.7; margin-bottom:20px; }
+.testimonial-author { font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(247,240,230,0.25); }
+
+.email-section { padding:100px 40px; background:var(--warm); text-align:center; }
+.email-inner { max-width:480px; margin:0 auto; }
+.e-label { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--taupe); margin-bottom:20px; display:flex; align-items:center; justify-content:center; gap:16px; }
+.e-label::before,.e-label::after { content:''; width:40px; height:1px; background:rgba(139,115,85,0.3); }
+.email-section h2 { font-family:'Cormorant',serif; font-size:clamp(30px,5vw,46px); font-weight:300; font-style:italic; line-height:1.2; margin-bottom:16px; }
+.email-section p { font-family:'Cormorant',serif; font-style:italic; font-size:17px; color:var(--taupe); margin-bottom:36px; line-height:1.65; }
+.email-form { display:flex; flex-direction:column; gap:12px; }
+.email-input { padding:16px 20px; background:var(--white); border:1px solid rgba(139,115,85,0.2); font-family:'Jost',sans-serif; font-size:14px; color:var(--ink); outline:none; transition:border-color 0.2s; }
+.email-input:focus { border-color:var(--taupe); }
+.email-input::placeholder { color:#bbb; }
+.email-note { font-size:11px; color:var(--taupe); opacity:0.6; margin-top:4px; }
+
+footer { background:#0a0906; padding:50px 40px 30px; text-align:center; border-top:1px solid rgba(201,168,76,0.08); }
+.footer-brand { font-family:'Cormorant',serif; font-style:italic; font-size:28px; color:rgba(247,240,230,0.5); margin-bottom:20px; display:block; }
+.footer-links { display:flex; justify-content:center; gap:24px; margin-bottom:20px; flex-wrap:wrap; }
+.footer-links a { color:rgba(247,240,230,0.25); text-decoration:none; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; transition:color 0.2s; }
+.footer-links a:hover { color:var(--gold-light); }
+.footer-copy { font-size:10px; color:rgba(247,240,230,0.15); letter-spacing:0.1em; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+.reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s ease,transform 0.8s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-delay-1 { transition-delay:0.15s; }
+.reveal-delay-2 { transition-delay:0.3s; }
+
+@media(max-width:768px) {
+  nav { padding:16px 20px; }
+  .nav-links { display:none; }
+  .hero { padding:0 20px 60px; }
+  .mood { grid-template-columns:1fr; }
+  .mood-text { padding:40px 20px; }
+  .products { padding:60px 20px; }
+  .products-grid { grid-template-columns:1fr; max-width:400px; }
+  .testimonials { padding:60px 20px; }
+  .testimonials-grid { grid-template-columns:1fr; }
+  .email-section { padding:60px 20px; }
+  footer { padding:40px 20px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav id="nav">
+  <a href="#" class="nav-brand">One Step Closer</a>
+  <ul class="nav-links">
+    <li><a href="#products">The Guides</a></li>
+    <li><a href="https://www.instagram.com/ajah_monet" target="_blank">Instagram</a></li>
+    <li><a href="https://www.tiktok.com/@ajah_monet" target="_blank">TikTok</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="eyebrow-line"></div>
+      <span>Digital Guides for Real Healing</span>
+    </div>
+    <h1>One Step<em>Closer</em></h1>
+    <p class="hero-sub">Honest guides for anyone done surviving — and ready to actually live.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-gold">Explore the Guides</a>
+      <a href="https://www.tiktok.com/@ajah_monet" target="_blank" class="btn-ghost">Follow on TikTok</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-bar"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span class="marquee-item">500+ copies downloaded</span>
+    <span class="marquee-item">★ 4.9 average rating</span>
+    <span class="marquee-item">Instant digital access</span>
+    <span class="marquee-item">Real healing. Real talk.</span>
+    <span class="marquee-item">No filter. No fluff.</span>
+    <span class="marquee-item">500+ copies downloaded</span>
+    <span class="marquee-item">★ 4.9 average rating</span>
+    <span class="marquee-item">Instant digital access</span>
+    <span class="marquee-item">Real healing. Real talk.</span>
+    <span class="marquee-item">No filter. No fluff.</span>
+  </div>
+</div>
+
+<div class="mood">
+  <div class="mood-block reveal">
+    <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&q=80" alt="Warm vibes" onerror="this.parentElement.style.background='linear-gradient(135deg,#3d2b1a,#8B6540)'; this.style.display='none'">
+    <div class="mood-overlay"></div>
+    <div class="mood-label">The Ritual</div>
+  </div>
+  <div class="mood-text reveal reveal-delay-1">
+    <div class="label">The Mission</div>
+    <h2>Guides for the ones doing the work.</h2>
+    <p>These aren't affirmations. They're the honest conversations you've been needing — the kind that actually move you forward.</p>
+  </div>
+  <div class="mood-text reveal" style="background:var(--ink);color:var(--white);">
+    <div class="label" style="color:rgba(201,168,76,0.5)">The Promise</div>
+    <h2 style="color:var(--white)">No sugarcoating. Just truth.</h2>
+    <p style="color:rgba(247,240,230,0.5)">Written from experience. Designed to help you see clearly, heal honestly, and stop repeating the same cycles.</p>
+  </div>
+  <div class="mood-block reveal reveal-delay-1">
+    <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80" alt="Luxury vibes" onerror="this.parentElement.style.background='linear-gradient(135deg,#0d1a2a,#2d6a8a)'; this.style.display='none'">
+    <div class="mood-overlay"></div>
+    <div class="mood-label">The Work</div>
+  </div>
+</div>
+
+<section class="products" id="products">
+  <div class="products-header reveal">
+    <div class="label">The Collection</div>
+    <h2>Choose your guide.</h2>
+  </div>
+  <div class="products-grid">
+    <div class="product-card reveal">
+      <div class="product-img">
+        <img src="https://one-step-closer-7.myshopify.com/cdn/shop/files/Screenshot2026-01-10154311.png?v=1773932752" alt="Soft Girl Hard Truths" style="width:100%;height:100%;object-fit:cover;">
+        <div class="product-tag">✦ Self-Awareness</div>
+      </div>
+      <div class="product-body">
+        <h3>Soft Girl Hard Truths</h3>
+        <p class="tagline">Self-Awareness Without the Delusion</p>
+        <p class="desc">You can be soft. You just can't be delusional. For anyone ready to see themselves clearly — without shame.</p>
+        <div class="product-footer">
+          <div class="product-price">$17<span>Instant download</span></div>
+          <a href="https://stan.store/ajahperry_387/p/get-soft-girl-hard-truths-now" target="_blank" class="btn-buy gold-buy">Get Access</a>
+        </div>
+      </div>
+    </div>
+    <div class="product-card reveal reveal-delay-1">
+      <div class="product-img">
+        <img src="https://one-step-closer-7.myshopify.com/cdn/shop/files/unlearningavoidance.jpg?v=1773933387" alt="Unlearning Avoidance" style="width:100%;height:100%;object-fit:cover;">
+        <div class="product-tag">✦ Attachment & Healing</div>
+      </div>
+      <div class="product-body">
+        <h3>Unlearning Avoidance</h3>
+        <p class="tagline">Choosing Connection After Survival</p>
+        <p class="desc">What kept you safe then is keeping you lonely now. A guide for breaking the avoidant patterns holding you back.</p>
+        <div class="product-footer">
+          <div class="product-price">$17<span>Instant download</span></div>
+          <a href="https://stan.store/ajahperry_387/p/unlearning-avoidance" target="_blank" class="btn-buy">Get Access</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="t-label reveal">What Readers Say</div>
+  <div class="testimonials-grid">
+    <div class="testimonial reveal">
+      <div class="stars">★★★★★</div>
+      <p>"This guide said things I didn't even know I needed to hear. I cried, took notes, and started over."</p>
+      <div class="testimonial-author">— Jasmine T., verified buyer</div>
+    </div>
+    <div class="testimonial reveal reveal-delay-1">
+      <div class="stars">★★★★★</div>
+      <p>"Real, raw, and practical. It felt like talking to someone who actually gets it."</p>
+      <div class="testimonial-author">— Morgan L., verified buyer</div>
+    </div>
+    <div class="testimonial reveal reveal-delay-2">
+      <div class="stars">★★★★★</div>
+      <p>"Worth every dollar. This is the guide I wish I had years ago."</p>
+      <div class="testimonial-author">— Aaliyah R., verified buyer</div>
+    </div>
+  </div>
+</section>
+
+<section class="email-section">
+  <div class="email-inner">
+    <div class="e-label reveal">Stay Connected</div>
+    <h2 class="reveal">The conversation continues on TikTok.</h2>
+    <p class="reveal reveal-delay-1">New content dropping weekly. Real talk, healing era energy, and behind the scenes of the guides.</p>
+    <div class="reveal reveal-delay-2" style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:8px;">
+      <a href="https://www.tiktok.com/@ajah_monet" target="_blank" class="btn-gold" style="width:100%;text-align:center;padding:18px;">Follow @Ajah_Monet on TikTok</a>
+      <a href="https://www.instagram.com/ajah_monet" target="_blank" style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--taupe);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9A84C'" onmouseout="this.style.color='#8B7355'">+ Follow on Instagram</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-brand">One Step Closer</span>
+  <div class="footer-links">
+    <a href="https://www.instagram.com/ajah_monet" target="_blank">Instagram</a>
+    <a href="https://www.tiktok.com/@ajah_monet" target="_blank">TikTok</a>
+    <a href="/cdn-cgi/l/email-protection#f5949f949d859087878cc7cdb59298949c99db969a98">Contact</a>
+    <a href="https://stan.store/ajahperry_387" target="_blank">Shop All</a>
+  </div>
+  <p class="footer-copy">© 2026 One Step Closer · All products are digital downloads</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cursor.style.left=mx-4+'px'; cursor.style.top=my-4+'px';
+});
+function animateRing(){
+  rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+  ring.style.left=rx-16+'px'; ring.style.top=ry-16+'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ cursor.style.transform='scale(2.5)'; ring.style.transform='scale(1.5)'; ring.style.opacity='0.8'; });
+  el.addEventListener('mouseleave',()=>{ cursor.style.transform='scale(1)'; ring.style.transform='scale(1)'; ring.style.opacity='0.5'; });
+});
+window.addEventListener('scroll',()=>{ document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50); });
+const reveals=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); }); },{threshold:0.1});
+reveals.forEach(el=>obs.observe(el));
+function handleEmail(){
+  const email=document.getElementById('emailInput').value;
+  if(!email||!email.includes('@')){ alert('Please enter a valid email address.'); return; }
+  window.location.hr
